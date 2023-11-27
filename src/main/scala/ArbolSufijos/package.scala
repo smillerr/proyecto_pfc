@@ -18,7 +18,7 @@ package object ArbolSufijos {
     }
   }
 
-  def pertenece(s: Seq[Char], t: Trie): Boolean = {
+  /*def pertenece(s: Seq[Char], t: Trie): Boolean = {
     // Devuelve true si la secuencia es reconocida por el trie t, y false si no.
     // ...
   }
@@ -32,4 +32,5 @@ package object ArbolSufijos {
     // Dada una secuencia no vacía de secuencias, devuelve el árbol de sufijos asociado a esas secuencias
     // ...
   }
+  */
 }
