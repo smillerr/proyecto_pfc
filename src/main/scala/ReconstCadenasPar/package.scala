@@ -5,6 +5,8 @@ import ArbolSufijos._
 
 package object ReconstCadenasPar {
   // Versión paralela del método reconstruirCadenaIngenuo
+
+  /*
   def reconstruirCadenaIngenuoPar(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
     // Recibe la longitud de la secuencia que hay que reconstruir (n),
     // un umbral y un oráculo para esa secuencia, y devuelve la secuencia reconstruida.
@@ -50,5 +52,6 @@ package object ReconstCadenasPar {
     // Usa paralelismo de tareas y/o datos.
     // ...
   }
+   */
 }
 
