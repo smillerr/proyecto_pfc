@@ -32,20 +32,20 @@ package object ReconstCadenas {
     // ...
   }
 */
-  def reconstruirCadenaTurbo(alfabeto: Seq[Char], N: Int, oraculo: Oraculo): Seq[Char] = {
+  def reconstruirCadenaTurbo(alfabeto: Seq[Char], n: Int, o: Oraculo): Seq[Char] = {
     val secuenciasIniciales: Set[Seq[Char]] = alfabeto.flatMap(char => Seq(Seq(char))).toSet
 
     def generarConjuntoSC(conjuntoActual: Set[Seq[Char]], k: Int): Set[Seq[Char]] = {
-      if (k > N) conjuntoActual
+      if (k > n) conjuntoActual
       else {
         val nuevasSecuencias = conjuntoActual.flatMap(seq1 => conjuntoActual.map(seq2 => seq1 ++ seq2))
-        val filtradas = nuevasSecuencias.filter(oraculo)
+        val filtradas = nuevasSecuencias.filter(o)
         generarConjuntoSC(filtradas, k * 2)
       }
     }
 
     val conjuntoFinal = generarConjuntoSC(secuenciasIniciales, 2)
-    conjuntoFinal.find(_.length == N).getOrElse(Seq.empty[Char])
+    conjuntoFinal.find(_.length == n).getOrElse(Seq.empty[Char])
   }
 
   def reconstruirCadenaTurboMejorado(n: Int, o: Oraculo): Seq[Seq[Char]] =
@@ -55,14 +55,32 @@ package object ReconstCadenas {
     // Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 también son subsecuencias de s.
     // Usa el filtro para ir más rápido.
     // ...
-    def Filtrar(SC: Seq[Seq[Char]], k: Int): Seq[Seq[Char]] = {
-      for {
-        cadena1 <- SC
-        cadena2 <- SC
-        comprobante <- SC
-        if ((cadena1 ++ cadena2).slice(k / 2, k + (k / 2)) == comprobante)
-      } yield cadena1 ++ cadena2
+
+    val secuenciasIniciales: Set[Seq[Char]] = alfabeto.flatMap(char => Seq(Seq(char))).toSet
+
+    def filtro(SC: Set[Seq[Char]], s: Seq[Char]): Boolean =
+    {
+      (for {secuencia <- SC if (secuencia == s)} yield true).head match
+      {
+        case true => true
+        case _ => false
+      }
     }
+
+    def Filtrar(SC: Set[Seq[Char]], k: Int): Set[Seq[Char]] =
+    {
+      if (k > n) SC
+      else
+      {
+        val nuevasSecuencias = SC.flatMap(seq1 => SC.map(seq2 => seq1 ++ seq2))
+        val filtradas = nuevasSecuencias.filter(x => filtro(nuevasSecuencias, x))
+        val filtradasOraculo = filtradas.filter(o)
+        Filtrar(filtradasOraculo, k * 2)
+      }
+    }
+
+    val conjuntoFinal = Filtrar(secuenciasIniciales, 2)
+    Seq(conjuntoFinal.find(_.length == n).getOrElse(Seq.empty[Char]))
   }
   /*
   def reconstruirCadenaTurboAcelerada(n: Int, o: Oraculo): Seq[Char] = {
