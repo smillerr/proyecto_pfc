@@ -48,7 +48,7 @@ package object ReconstCadenas {
     conjuntoFinal.find(_.length == n).getOrElse(Seq.empty[Char])
   }
 
-  def reconstruirCadenaTurboMejorado(n: Int, o: Oraculo): Seq[Seq[Char]] =
+  def reconstruirCadenaTurboMejorado(n: Int, o: Oraculo): Seq[Char] =
   {
     // Recibe la longitud de la secuencia que hay que reconstruir (n, potencia de 2),
     // y un oráculo para esa secuencia, y devuelve la secuencia reconstruida.
@@ -56,31 +56,35 @@ package object ReconstCadenas {
     // Usa el filtro para ir más rápido.
     // ...
 
-    val secuenciasIniciales: Set[Seq[Char]] = alfabeto.flatMap(char => Seq(Seq(char))).toSet
+    val secuenciasIniciales: Seq[Seq[Char]] = alfabeto.flatMap(s1 => alfabeto.map(s2 => Seq(s1,s2))).filter(o)
 
-    def filtro(SC: Set[Seq[Char]], s: Seq[Char]): Boolean =
+    def filtro(ss: Seq[Seq[Char]], k:Int, s:Seq[Char]): Boolean =
     {
-      (for {secuencia <- SC if (secuencia == s)} yield true).head match
-      {
-        case true => true
-        case _ => false
-      }
-    }
-
-    def Filtrar(SC: Set[Seq[Char]], k: Int): Set[Seq[Char]] =
-    {
-      if (k > n) SC
+      //si ya no quedan cadenas en SC, s no es una cadena validad
+      if(ss.isEmpty) false
       else
+      //si aun quedan cadenas en SC, se sigue comprobando
       {
-        val nuevasSecuencias = SC.flatMap(seq1 => SC.map(seq2 => seq1 ++ seq2))
-        val filtradas = nuevasSecuencias.filter(x => filtro(nuevasSecuencias, x))
-        val filtradasOraculo = filtradas.filter(o)
-        Filtrar(filtradasOraculo, k * 2)
+        if(ss.head.containsSlice(s.slice(k-1, k+1))) true
+        else filtro(ss.tail, k, s)
       }
     }
 
-    val conjuntoFinal = Filtrar(secuenciasIniciales, 2)
-    Seq(conjuntoFinal.find(_.length == n).getOrElse(Seq.empty[Char]))
+    def Filtrar(ss: Seq[Seq[Char]], k: Int): Seq[Seq[Char]] =
+    {
+      //se comprueba si ha alcanzado el tamaño maximo
+      if (k == n) ss //se devuelve la cadena recibida en caso de que ya se haya alcanzado el tamaño maximo
+      else //se crean cadenas de tamñaño 2k y se filtran, primero se filtran las obvias, y luego se filtran usando el oraculo
+      {
+        // se crean las secuencias
+        val nuevasSecuencias = ss.flatMap(seq1 => ss.map(seq2 => seq1 ++ seq2))
+        //se filtran
+        val filtradas = nuevasSecuencias.filter(x => filtro(ss,k,x)).filter(o)
+        Filtrar(filtradas, k * 2) //se llama recursivamente Filtrar
+      }
+    }
+
+    Filtrar(secuenciasIniciales, 2).head
   }
   /*
   def reconstruirCadenaTurboAcelerada(n: Int, o: Oraculo): Seq[Char] = {
