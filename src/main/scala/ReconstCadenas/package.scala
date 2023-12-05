@@ -25,13 +25,26 @@ package object ReconstCadenas {
     }
   }
 
-  /*def reconstruirCadenaMejorado(n: Int, o: Oraculo): Seq[Char] = {
-    // Recibe la longitud de la secuencia que hay que reconstruir (n),
-    // y un oráculo para esa secuencia, y devuelve la secuencia reconstruida.
-    // Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 también son subsecuencias de s.
-    // ...
+def reconstruirCadenaMejorado(n: Int, o: Oraculo): Seq[Char] = {
+  val alfabeto = Seq('a', 'c', 'g', 't')
+
+  // Función auxiliar recursiva para generar subcadenas candidatas
+  def generarSubcadenas(longitud: Int): Seq[String] = {
+    if (longitud == 0) Seq("")
+    else {
+      val subCadenas = generarSubcadenas(longitud - 1)
+      alfabeto.flatMap(char => subCadenas.map(sub => char.toString + sub))
+    }
   }
-*/
+
+  // Generar subcadenas candidatas y consultar al oráculo
+  val candidatos = generarSubcadenas(n)
+  candidatos.find(o) match {
+    case Some(cadenaEncontrada) => cadenaEncontrada.toList // Si se encuentra, devolver la cadena como lista de caracteres
+    case None => Seq.empty // Si no se encuentra, devolver una lista vacía o manejar el caso según lo necesites
+  }
+}
+  
   def reconstruirCadenaTurbo(alfabeto: Seq[Char], n: Int, o: Oraculo): Seq[Char] = {
     val secuenciasIniciales: Set[Seq[Char]] = alfabeto.flatMap(char => Seq(Seq(char))).toSet
 
