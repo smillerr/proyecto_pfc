@@ -1,6 +1,8 @@
 import ArbolSufijos._
 import Oraculo._
 
+import scala.collection.View.Empty
+
 package object ReconstCadenas {
   def reconstruirCadenaIngenuo(n: Int, o: Oraculo): Seq[Char] = {
     val alfabeto = Seq('a', 'c', 'g', 't')
@@ -17,11 +19,11 @@ package object ReconstCadenas {
         }
       }
     }
-    val secuenciaResultante = generarTodasSecuencias(n, alfabeto).find(o)
+    val secuenciaResultante = generarTodasSecuencias(n, alfabeto).filter(o).head
 
     secuenciaResultante match {
-      case None => Seq.empty[Char]
-      case Some(secuenciaIngenua) => secuenciaIngenua
+      case Nil => Seq.empty[Char]
+      case nonEmptySeq => secuenciaResultante
     }
   }
 
@@ -32,7 +34,7 @@ package object ReconstCadenas {
     // ...
   }
 */
-  def reconstruirCadenaTurbo(alfabeto: Seq[Char], n: Int, o: Oraculo): Seq[Char] = {
+  def reconstruirCadenaTurbo(n: Int, o: Oraculo): Seq[Char] = {
     val secuenciasIniciales: Set[Seq[Char]] = alfabeto.flatMap(char => Seq(Seq(char))).toSet
 
     def generarConjuntoSC(conjuntoActual: Set[Seq[Char]], k: Int): Set[Seq[Char]] = {
@@ -43,13 +45,17 @@ package object ReconstCadenas {
         generarConjuntoSC(filtradas, k * 2)
       }
     }
-
     val conjuntoFinal = generarConjuntoSC(secuenciasIniciales, 2)
-    conjuntoFinal.find(_.length == n).getOrElse(Seq.empty[Char])
+    if(conjuntoFinal.nonEmpty){
+      conjuntoFinal.filter(seq=> seq.length == n).head
+    }
+    else {
+      Seq.empty[Char]
+    }
   }
 
   def reconstruirCadenaTurboMejorado(n: Int, o: Oraculo): Seq[Char] =
-  {
+    {
     // Recibe la longitud de la secuencia que hay que reconstruir (n, potencia de 2),
     // y un oráculo para esa secuencia, y devuelve la secuencia reconstruida.
     // Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 también son subsecuencias de s.
