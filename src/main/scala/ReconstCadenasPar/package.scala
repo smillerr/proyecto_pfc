@@ -136,22 +136,27 @@ package object ReconstCadenasPar {
       }
     }
 
-    def FiltrarParalelo(ss: ParSeq[ParSeq[Char]], k: Int): ParSeq[ParSeq[Char]] = {
-      //se comprueba si ha alcanzado el tamaño maximo
-      if (k == n) ss //se devuelve la cadena recibida en caso de que ya se haya alcanzado el tamaño maximo
-      else //se crean cadenas de tamñaño 2k y se filtran, primero se filtran las obvias, y luego se filtran usando el oraculo
-      {
+    def reconstruirCadenaTurboAcelerada(n: Int, o: Oraculo): Seq[Char] = {
+      //recibe la longitud de la secuencia que hay que reconstruir(n, potencia de 2)
+      // y un oraculo para esa secuencia y devuelve la secuencia reconstruida
+      //Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 tambien son subsecuencias de s
+      //Usa arbol de sufijos para guardar Set[Seq[Char]]
 
-        // se crean las secuencias
-        val nuevasSecuencias = ss.flatMap(seq1 => ss.map(seq2 => seq1 ++ seq2))
-        //se filtran
-        val filtradas = (nuevasSecuencias.filter(s => filtroParalelo(ss, k, s))).to(Seq).map(s => s.to(Seq)).filter(o).par.map(s => s.par)
-        FiltrarParalelo(filtradas, k * 2) //se llama recursivamente Filtrar
+      val secuenciasIniciales: Seq[Seq[Char]] = alfabeto.flatMap(s1 => alfabeto.map(s2 => Seq(s1, s2))).filter(o)
+
+      def Filtrar(SC: Set[Seq[Char]], k: Int): Set[Seq[Char]] = {
+        if (k == n) SC
+        else {
+          val nuevasSecuencias = SC.flatMap(seq1 => SC.map(seq2 => seq1 ++ seq2))
+          val arbol = arbolDeSufijos(nuevasSecuencias.toSeq)
+          val filtradas = nuevasSecuencias.filter(x => pertenece(x, arbol)).filter(o)
+          Filtrar(filtradas, k * 2)
+        }
       }
-    }
 
-    Filtrar(secuenciasIniciales, 2).head
-  }
+      Filtrar(secuenciasIniciales.toSet, 2).head
+
+    }
 /*
   // Versión paralela del método reconstruirCadenaTurboAcelerada
   def reconstruirCadenaTurboAceleradaPar(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
