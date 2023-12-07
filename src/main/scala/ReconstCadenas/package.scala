@@ -92,14 +92,25 @@ package object ReconstCadenas {
 
     Filtrar(secuenciasIniciales, 2).head
   }
-  /*
+
   def reconstruirCadenaTurboAcelerada(n: Int, o: Oraculo): Seq[Char] = {
-    // Recibe la longitud de la secuencia que hay que reconstruir (n, potencia de 2),
-    // y un oráculo para esa secuencia, y devuelve la secuencia reconstruida.
-    // Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 también son subsecuencias de s.
-    // Usa el filtro para ir más rápido.
-    // Usa árboles de sufijos para guardar Seq[Seq[Char]].
-    // ...
-  }
-  */
+      //recibe la longitud de la secuencia que hay que reconstruir(n, potencia de 2)
+      // y un oraculo para esa secuencia y devuelve la secuencia reconstruida
+      //Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 tambien son subsecuencias de s
+      //Usa arbol de sufijos para guardar Set[Seq[Char]]
+
+      val secuenciasIniciales: Seq[Seq[Char]] = alfabeto.flatMap(s1 => alfabeto.map(s2 => Seq(s1,s2))).filter(o)
+      def Filtrar(SC: Set[Seq[Char]], k: Int, arbol: Trie): Set[Seq[Char]] = {
+        if(k == n) SC
+        else {
+          val nuevasSecuencias = SC.flatMap(seq1 => SC.map(seq2 => seq1 ++ seq2))
+          val arbol = arbolDeSufijos(nuevasSecuencias.toSeq)
+          val filtradas = nuevasSecuencias.filter(x=>pertenece(x,arbol)).filter(o)
+          val arbolActual = arbolDeSufijos(filtradas.toSeq)
+          Filtrar(filtradas,k*2,arbolActual)
+        }
+      }
+      Filtrar(secuenciasIniciales.toSet, 2, Nodo('_', false, Nil)).head
+    }
+
 }

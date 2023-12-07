@@ -35,9 +35,7 @@ package object ReconstCadenasPar {
         }
       }
     }
-
     val secuenciaResultante = generarTodasSecuencias(n, alfabeto).filter(o).head
-
     secuenciaResultante match {
       case Nil => Seq.empty[Char]
       case nonEmptySeq => secuenciaResultante
@@ -55,37 +53,32 @@ package object ReconstCadenasPar {
 */
   // Versión paralela del método reconstruirCadenaTurbo
   def reconstruirCadenaTurboPar(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
-    // recibela longitud de la secuencia que hay que reconstruir (n, potencia de 2), y un oraculo para esa secuencia
-    // y devuelve la secuencia reconstruida
-    // Usa la propiedad de que si s=s1++s2 entonces s1 y s2 tambien son subsecuencias de s
-    // Usa paralelismo de tareas y/o datos
-
-    def generarCadenaTurbo(k: Int, SC: Seq[Seq[Char]]): Seq[Char] = {
-      val newSC = if (n <= umbral) {
-        SC.flatMap(seq1 => SC.map(seq2 => seq1 ++ seq2)).filter(o)
+    def generarCadenaTurbo(k: Int, conjuntoActual: Seq[Seq[Char]]): Seq[Char] = {
+      val posiblesSecuencias = if (n <= umbral) {
+        conjuntoActual.flatMap(seq1 => conjuntoActual.map(seq2 => seq1 ++ seq2)).filter(o)
       }
       else {
-        val SCPar = SC.par
-        val (leftSC, rightSC) = SCPar.splitAt(SC.size / 2)
-        val ((l1SC, l2SC), (r1SC, r2SC)) = (leftSC.splitAt(leftSC.size / 2), rightSC.splitAt(rightSC.size / 2))
-        val ((l1newSC, l2newSC), (r1newSC, r2newSC)) = parallel(
+        val conjuntoActualPar = conjuntoActual.par
+        val (conjuntoIzq, conjuntoDer) = conjuntoActualPar.splitAt(conjuntoActual.size / 2)
+        val ((izqConjuntoIzq, derConjuntoIzq), (izqConjuntoDer, derConjuntoDer)) = (conjuntoIzq.splitAt(conjuntoIzq.size / 2), conjuntoDer.splitAt(conjuntoDer.size / 2))
+        val ((conjuntoPar1, conjuntoPar2), (conjuntoPar3, conjuntoPar4)) = parallel(
           parallel(
-            l1SC.flatMap(seq1 => SCPar.map(seq2 => seq1 ++ seq2)).filter(o),
-            l2SC.flatMap(seq1 => SCPar.map(seq2 => seq1 ++ seq2)).filter(o)),
+            izqConjuntoIzq.flatMap(seq1 => conjuntoActualPar.map(seq2 => seq1 ++ seq2)).filter(o),
+            derConjuntoIzq.flatMap(seq1 => conjuntoActualPar.map(seq2 => seq1 ++ seq2)).filter(o)),
           parallel(
-            r1SC.flatMap(seq1 => SCPar.map(seq2 => seq1 ++ seq2)).filter(o),
-            r2SC.flatMap(seq1 => SCPar.map(seq2 => seq1 ++ seq2)).filter(o)
+            izqConjuntoDer.flatMap(seq1 => conjuntoActualPar.map(seq2 => seq1 ++ seq2)).filter(o),
+            derConjuntoDer.flatMap(seq1 => conjuntoActualPar.map(seq2 => seq1 ++ seq2)).filter(o)
           )
         )
-        (l1newSC ++ l2newSC ++ r1newSC ++ r2newSC).seq
+        (conjuntoPar1 ++ conjuntoPar2 ++ conjuntoPar3 ++ conjuntoPar4).seq
       }
-      val resultado = newSC.filter(subseq => subseq.length == n)
-      if (resultado.nonEmpty) {
-        resultado.head
+      val secuenciaReconstruida = posiblesSecuencias.filter(subseq => subseq.length == n)
+      if (secuenciaReconstruida.nonEmpty) {
+        secuenciaReconstruida.head
       } else if (k > n) {
         Seq.empty[Char]
       } else {
-        generarCadenaTurbo(k * 2, newSC)
+        generarCadenaTurbo(k * 2, posiblesSecuencias)
       }
     }
     val conjuntoInicial: Seq[Seq[Char]] = alfabeto.map(Seq(_))
@@ -100,12 +93,6 @@ package object ReconstCadenasPar {
     // Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 también son subsecuencias de s.
     // Usa el filtro para ir más rápido.
     // Usa paralelismo de tareas y/o datos.
-    // ...
-    // Recibe la longitud de la secuencia que hay que reconstruir (n, potencia de 2),
-  // y un oráculo para esa secuencia, y devuelve la secuencia reconstruida.
-  // Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 también son subsecuencias de s.
-  // Usa el filtro para ir más rápido.
-  // ...
 
     val secuenciasIniciales: Seq[Seq[Char]] = alfabeto.flatMap(s1 => alfabeto.map(s2 => Seq(s1, s2))).filter(o)
 
