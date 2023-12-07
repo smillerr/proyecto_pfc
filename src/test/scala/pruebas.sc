@@ -71,7 +71,7 @@ val s_corta_8 = ss1_10(7)
 val s_corta_9 = ss1_10(8)
 val s_corta_10 = ss1_10(9)
 
-
+/*
 compararAlgoritmos(reconstruirCadenaTurbo,reconstruirCadenaTurboPar(8))(s_long_2.length,crearOraculo(1)(s_long_2))
 compararAlgoritmos(reconstruirCadenaTurbo,reconstruirCadenaTurboPar(8))(s_long_4.length,crearOraculo(1)(s_long_4))
 compararAlgoritmos(reconstruirCadenaTurbo,reconstruirCadenaTurboPar(8))(s_long_8.length,crearOraculo(1)(s_long_8))
@@ -93,3 +93,28 @@ compararAlgoritmos(reconstruirCadenaIngenuo,reconstruirCadenaIngenuoPar(4))(s_co
 compararAlgoritmos(reconstruirCadenaIngenuo,reconstruirCadenaIngenuoPar(4))(s_corta_8.length,crearOraculo(1)(s_corta_8))
 compararAlgoritmos(reconstruirCadenaIngenuo,reconstruirCadenaIngenuoPar(4))(s_corta_9.length,crearOraculo(1)(s_corta_9))
 compararAlgoritmos(reconstruirCadenaIngenuo,reconstruirCadenaIngenuoPar(4))(s_corta_10.length,crearOraculo(1)(s_corta_10))
+
+def pruebasLongNTurbo(numPruebas:Int,n:Int,umbral:Int) = for {
+  i <- 1 to numPruebas
+  s = secAlAzar(math.pow(2,n).toInt,Seq())
+} yield compararAlgoritmos(reconstruirCadenaTurbo,reconstruirCadenaTurboPar(umbral))(s.length,crearOraculo(1)(s))
+// Long 2
+//pruebasLongNTurbo(5,1,1)
+// Long 4
+//pruebasLongNTurbo(5,2,1)
+// Long 8
+//pruebasLongNTurbo(5,3,2)
+// Long 16
+//pruebasLongNTurbo(5,4,4)
+// Long 32
+pruebasLongNTurbo(3,5,4)
+// Long 64
+pruebasLongNTurbo(3,6,4)
+// Long 128
+pruebasLongNTurbo(3,7,4)
+// Long 256
+pruebasLongNTurbo(3,8,4)
+
+*/
+
+

@@ -9,33 +9,29 @@ package object ReconstCadenasPar {
   // Versión paralela del método reconstruirCadenaIngenuo
 
   def reconstruirCadenaIngenuoPar(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
-    val alfabeto = Seq('a', 'c', 'g', 't')
 
-    def generarTodasSecuencias(n: Int, alfabeto: Seq[Char]): Set[Seq[Char]] = {
-      val initialSet: Set[Seq[Char]] = Set(Seq.empty[Char])
-      if(n<=umbral){
-        (1 to n).foldLeft(initialSet) { (acc, _) =>
+    def generarTodasSecuenciasRec(rango: Range): Set[Seq[Char]] = {
+      if (rango.length <= umbral) {
+        // Caso base: cuando el rango es igual o menor al umbral, realizar de manera secuencial
+        rango.foldLeft(Set(Seq.empty[Char])) { (acc, _) =>
           for {
             seq <- acc
             caracter <- alfabeto
-          }
-          yield {
-            seq :+ caracter
-          }
+          } yield seq :+ caracter
         }
       } else {
-        (1 to n).par.foldLeft(initialSet) { (acc, _) =>
-          for {
-            seq <- acc
-            caracter <- alfabeto
-          }
-          yield {
-            seq :+ caracter
-          }
-        }
+        // Dividir el rango en dos partes y continuar de manera recursiva
+        val m = rango.length / 2
+        val (secuenciasPrimeraParte, secuenciasSegundaParte) = parallel(
+          generarTodasSecuenciasRec(rango.take(m)),
+          generarTodasSecuenciasRec(rango.drop(m))
+        )
+        secuenciasPrimeraParte.flatMap(seq1 => secuenciasSegundaParte.map(seq2 => seq1 ++ seq2))
       }
     }
-    val secuenciaResultante = generarTodasSecuencias(n, alfabeto).filter(o).head
+
+    // Uso de la función recursiva
+    val secuenciaResultante = generarTodasSecuenciasRec(1 to n).filter(o).head
     secuenciaResultante match {
       case Nil => Seq.empty[Char]
       case nonEmptySeq => secuenciaResultante
