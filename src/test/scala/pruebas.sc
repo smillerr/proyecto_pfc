@@ -114,7 +114,45 @@ pruebasLongNTurbo(3,6,4)
 pruebasLongNTurbo(3,7,4)
 // Long 256
 pruebasLongNTurbo(3,8,4)
-
 */
+def pruebasLongNIngenuo(numPruebas:Int,n:Int,umbral:Int) = for {
+  i <- 1 to numPruebas
+  s = secAlAzar(n,Seq())
+} yield compararAlgoritmos(reconstruirCadenaIngenuo,reconstruirCadenaIngenuoPar(umbral))(s.length,crearOraculo(1)(s))
+/*.
+// Long 1
+pruebasLongNIngenuo(5,1,1)
+// Long 2
+pruebasLongNIngenuo(5,2,1)
+// Long 3
+pruebasLongNIngenuo(5,3,2)
+// Long 4
+pruebasLongNIngenuo(5,4,2)
+// Long 5
+pruebasLongNIngenuo(3,5,2)
+
+// Long 6
+pruebasLongNIngenuo(3,6,2)
+// Long 7
+*/
+
+//pruebasLongNIngenuo(3,7,2)
+// Long 8
+pruebasLongNIngenuo(1,8,2)
+// Long 8
+pruebasLongNIngenuo(1,9,2)
+// Long 10
+pruebasLongNIngenuo(1,10,2)
+
+pruebasLongNIngenuo(1,11,2)
+
+pruebasLongNIngenuo(1,12,4)
+
+// val res0: IndexedSeq[(Double, Double, Double)] = Vector((25682.4169,25500.6929,1.007126237734505), (25708.8041,25680.4362,1.001104650239547), (25529.4216,26187.7497,0.9748612191753154)) LONG 7
+
+
+
+
+
 
 

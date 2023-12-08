@@ -4,12 +4,12 @@ import ArbolSufijos._
 
 import scala.collection.parallel.CollectionConverters._
 import scala.collection.parallel.ParSeq
+import scala.collection.parallel.immutable.ParRange
 
 package object ReconstCadenasPar {
   // Versión paralela del método reconstruirCadenaIngenuo
 
   def reconstruirCadenaIngenuoPar(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
-
     def generarTodasSecuenciasRec(rango: Range): Set[Seq[Char]] = {
       if (rango.length <= umbral) {
         // Caso base: cuando el rango es igual o menor al umbral, realizar de manera secuencial
@@ -37,16 +37,33 @@ package object ReconstCadenasPar {
       case nonEmptySeq => secuenciaResultante
     }
   }
-  /*
+
   // Versión paralela del método reconstruirCadenaMejorado
-  def reconstruirCadenaMejoradoPar(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
-    // Recibe la longitud de la secuencia que hay que reconstruir (n),
-    // un umbral y un oráculo para esa secuencia, y devuelve la secuencia reconstruida.
-    // Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 también son subsecuencias de s.
-    // Usa paralelismo de tareas y/o datos.
-    // ...
+  def reconstruirCadenaMejoradoPar(n: Int, o: Seq[Char] => Boolean): Seq[Char] = {
+    val alfabeto = Seq('a', 'c', 'g', 't')
+
+    def generarCadenas(k: Int, chars: Set[Seq[Char]]): Set[Seq[Char]] = {
+      if (k <= 0) chars
+      else generarCadenas(k - 1, chars.flatMap(s => alfabeto.par.map(c => s :+ c)).seq)
+    }
+
+    def filtrarCadenas(cadenas: Set[Seq[Char]]): Set[Seq[Char]] = {
+      cadenas.par.filter(o).seq
+    }
+
+    def reconstruirRec(k: Int, subcadenas: Set[Seq[Char]]): Seq[Char] = {
+      if (k > n) Seq.empty[Char]
+      else {
+        val nuevasSubcadenas = filtrarCadenas(generarCadenas(k, subcadenas))
+        if (nuevasSubcadenas.isEmpty) reconstruirRec(k + 1, subcadenas)
+        else nuevasSubcadenas.head
+      }
+    }
+
+    val conjuntoInicial = Set(Seq.empty[Char])
+    reconstruirRec(1, conjuntoInicial)
   }
-*/
+
   // Versión paralela del método reconstruirCadenaTurbo
   def reconstruirCadenaTurboPar(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
     def generarCadenaTurbo(k: Int, conjuntoActual: Seq[Seq[Char]]): Seq[Char] = {

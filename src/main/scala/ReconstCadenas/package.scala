@@ -27,13 +27,30 @@ package object ReconstCadenas {
     }
   }
 
-  /*def reconstruirCadenaMejorado(n: Int, o: Oraculo): Seq[Char] = {
-    // Recibe la longitud de la secuencia que hay que reconstruir (n),
-    // y un oráculo para esa secuencia, y devuelve la secuencia reconstruida.
-    // Usa la propiedad de que si s = s1 ++ s2 entonces s1 y s2 también son subsecuencias de s.
-    // ...
+  def reconstruirCadenaMejorado(n: Int, o: Seq[Char] => Boolean): Seq[Char] = {
+    val alfabeto = Seq('a', 'c', 'g', 't')
+
+    def generarCadenas(k: Int, chars: Set[Seq[Char]]): Set[Seq[Char]] = {
+      if (k <= 0) chars
+      else generarCadenas(k - 1, chars.flatMap(s => alfabeto.map(c => s :+ c)))
+    }
+
+    def filtrarCadenas(cadenas: Set[Seq[Char]]): Set[Seq[Char]] = {
+      cadenas.filter(o)
+    }
+
+    def reconstruirRec(k: Int, subcadenas: Set[Seq[Char]]): Seq[Char] = {
+      if (k > n) Seq.empty[Char]
+      else {
+        val nuevasSubcadenas = filtrarCadenas(generarCadenas(k, subcadenas))
+        if (nuevasSubcadenas.isEmpty) reconstruirRec(k + 1, subcadenas)
+        else nuevasSubcadenas.head
+      }
+    }
+
+    val conjuntoInicial = Set(Seq.empty[Char])
+    reconstruirRec(1, conjuntoInicial)
   }
-*/
   def reconstruirCadenaTurbo(n: Int, o: Oraculo): Seq[Char] = {
     val secuenciasIniciales: Set[Seq[Char]] = alfabeto.flatMap(char => Seq(Seq(char))).toSet
 
@@ -100,7 +117,6 @@ package object ReconstCadenas {
     //Usa arbol de sufijos para guardar Set[Seq[Char]]
 
     val secuenciasIniciales: Seq[Seq[Char]] = alfabeto.flatMap(s1 => alfabeto.map(s2 => Seq(s1, s2))).filter(o)
-
     def Filtrar(SC: Set[Seq[Char]], k: Int): Set[Seq[Char]] = {
       if (k == n) SC
       else {
