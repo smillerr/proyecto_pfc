@@ -1,3 +1,4 @@
-[debug] not up to date. inChanged = true, force = false
-[debug] Updating ProjectRef(uri("file:/C:/Users/Juan%20Sebastian/projects/proyecto_pfc/"), "root")...
-[debug] Done updating ProjectRef(uri("file:/C:/Users/Juan%20Sebastian/projects/proyecto_pfc/"), "root")
+[warn] scala-library-2.13.12-sources.jar no longer exists at C:\Users\Juan Sebastian\AppData\Local\Coursier\Cache\v1\https\repo1.maven.org\maven2\org\scala-lang\scala-library\2.13.12\scala-library-2.13.12-sources.jar
+[debug] not up to date. inChanged = false, force = false
+[debug] Updating ProjectRef(uri("file:/C:/Users/laptop-pc/Desktop/tests/proyecto_pfc/"), "root")...
+[debug] Done updating ProjectRef(uri("file:/C:/Users/laptop-pc/Desktop/tests/proyecto_pfc/"), "root")
